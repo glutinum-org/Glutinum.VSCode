@@ -1,0 +1,56 @@
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+name: EasyBuild ShipIt
+
+jobs:
+  # Run tests and generate a Pull Request to prepare a release
+  shipit-pr:
+    name: ShipIt - Pull Request
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 50
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - name: Build and test
+        run: ./build.sh test
+      - name: ShipIt (Pull Request)
+        run: dotnet shipit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    if: "startsWith(github.event.head_commit.message, 'chore: release ')"
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      # Use the ambient GitHub token to login to NuGet and retrieve an API key
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: MangelMaxime
+
+      - name: Build, Test and Release
+        run: ./build.sh release
+        env:
+          NUGET_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}

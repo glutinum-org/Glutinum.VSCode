@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: "3"
+
+shopt:
+  - globstar
+
+tasks:
+
+  clean:
+    desc: Clean up generated files
+    cmds:
+      - rm -rf **/bin
+      - rm -rf **/obj
+
+  publish:
+    desc: Publish the project
+    requires:
+      vars:
+        - NUGET_KEY
+    deps:
+      - clean
+    cmds:
+      - dotnet pack -c Release
+      - dotnet nuget push src/VSCode/bin/Release/*.nupkg --skip-duplicate -k {{.NUGET_KEY}} 

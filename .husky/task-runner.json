@@ -1,0 +1,26 @@
+{
+    "$schema": "https://alirezanet.github.io/Husky.Net/schema.json",
+    "tasks": [
+        {
+            "name": "fantomas-format-staged-files",
+            "group": "pre-commit",
+            "command": "dotnet",
+            "args": ["fantomas", "${staged}"],
+            "include": [
+                "src/**/*.fs",
+                "src/**/*.fsx",
+                "src/**/*.fsi",
+                "test/**/*.fs",
+                "test/**/*.fsx",
+                "test/**/*.fsi"
+            ]
+        },
+        {
+            "name": "lint-markdown-staged-files",
+            "group": "pre-commit-operations",
+            "command": "npx",
+            "args": ["markdownlint-cli", "${staged}"],
+            "exclude": ["**/CHANGELOG.md"]
+        }
+    ]
+}
