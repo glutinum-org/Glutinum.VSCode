@@ -12,6 +12,9 @@ tasks:
     cmds:
       - rm -rf **/bin
       - rm -rf **/obj
+      - | 
+        echo 'Cleaned up generated 
+        files (bin/ and obj/ directories)'
 
   publish:
     desc: Publish the project
@@ -22,4 +25,8 @@ tasks:
       - clean
     cmds:
       - dotnet pack -c Release
-      - dotnet nuget push src/VSCode/bin/Release/*.nupkg --skip-duplicate -k {{.NUGET_KEY}} 
+      - |
+        dotnet nuget push src/VSCode/bin/Release/*.nupkg \
+          --skip-duplicate \
+          -k {{.NUGET_KEY}} \
+          -s https://api.nuget.org/v3/index.json
