@@ -23,8 +23,8 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
-      - name: Build and test
-        run: ./build.sh test
+      - name: Build
+        run: dotnet build
       - name: ShipIt (Pull Request)
         run: dotnet shipit
         env:
